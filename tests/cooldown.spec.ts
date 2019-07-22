@@ -2,15 +2,13 @@ import {
   Config,
   REDUX_ACTION_RETRY,
   cacheConfig,
-  retryAllActionCreator,
   CacheableAction,
-  CachedAction
+  CachedAction,
 } from "../src/core/index";
 import {
   Cooldown,
   cooldownConfg,
   cooldownWrapAction,
-  coolDownUntilKey,
   cancelCooldownActionCreator,
   coolAndRetryAllActionCreator
 } from "../src/cooldown";
@@ -22,7 +20,6 @@ import * as fc from 'fast-check';
 
 import {
   last,
-  splitEvery,
   values,
   uniq,
   map,
@@ -34,6 +31,9 @@ import {
 import uuid from 'uuid/v4'
 import { duration } from "moment";
 import moment from 'moment';
+import { Actions2RetryAllDispatchPattern } from './utils/fns';
+import { upsertActionCreator } from '../src/core/upsert';
+import { retryAllActionCreator } from '../src/core/retryAll';
 
 
 jest.mock('../src/now', () => ({
@@ -97,12 +97,16 @@ test('when action is cooling retrying has no effect', () => {
 
           const wrappedAction: CachedAction<cooldownWrapAction> = {
             action,
-            [coolDownUntilKey]: now.clone().add(cooldownTime)
+            coolDownUntil: now.clone().add(cooldownTime)
           }
 
           wrappedActions.push(wrappedAction)
           actions.push(action)
-          calledWith.push([action], [retryAllAction])
+          calledWith.push(
+            [upsertActionCreator(action)],
+            [action],
+            [retryAllAction],
+          )
 
           pipeline.store.dispatch(action)
           expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)).toEqual(wrappedAction)
@@ -165,12 +169,18 @@ test('0ms cooldown is the same as retry all without plugin', () => {
 
           const wrappedAction: CachedAction<cooldownWrapAction> = {
             action,
-            [coolDownUntilKey]: now.clone().add(cooldownTime)
+            coolDownUntil: now.clone().add(cooldownTime)
           }
 
           wrappedActions.push(wrappedAction)
           actions.push(action)
-          calledWith.push([action], [retryAllAction], ...splitEvery(1, actions))
+
+          calledWith.push(
+            [upsertActionCreator(action)],
+            [action],
+            [retryAllAction],
+            ...Actions2RetryAllDispatchPattern(actions)
+          )
 
           pipeline.store.dispatch(action)
           expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)).toEqual(wrappedAction)
@@ -206,7 +216,7 @@ test('cooled actions are retryable', () => {
         }
 
         const times = pipe(
-          values,
+          (x: cacheConfig<cooldownConfg>) => values(x),
           map<cooldownConfg, number>(typeConfig => typeConfig.cooldownTime.asMilliseconds()),
           uniq,
           sort((a, b) => a - b)
@@ -215,13 +225,16 @@ test('cooled actions are retryable', () => {
         const pipeline = wholePipeline<cooldownConfg, cooldownWrapAction>({}, config)
 
         const retryAllAction = retryAllActionCreator()
+        const calledWith = []
 
         for (const action of actions) {
+          calledWith.push(
+            [upsertActionCreator(action)],
+            [action],
+          )
           pipeline.store.dispatch(action)
-
         }
 
-        const calledWith: any[] = splitEvery(1, actions)
 
         for (const time of times) {
 
@@ -230,11 +243,11 @@ test('cooled actions are retryable', () => {
           const actionsThanShouldBeFired = pipeline.store.getState()[REDUX_ACTION_RETRY].cache
             .filter((wrappedAction) => {
               const ca = ((wrappedAction as any) as CachedAction<cooldownWrapAction>)
-              return ca[coolDownUntilKey].isSameOrBefore(cooldownNow.now())
+              return ca.coolDownUntil.isSameOrBefore(cooldownNow.now())
             })
             .map(wrappedAction => wrappedAction.action)
 
-          calledWith.push([retryAllAction], ...splitEvery(1, actionsThanShouldBeFired))
+          calledWith.push([retryAllAction], ...Actions2RetryAllDispatchPattern(actionsThanShouldBeFired))
 
           expect(actionsThanShouldBeFired.length).toBeGreaterThanOrEqual(1)
 
@@ -242,7 +255,7 @@ test('cooled actions are retryable', () => {
 
           pipeline.store.getState()[REDUX_ACTION_RETRY].cache.forEach((cachedAction) => {
             const ca = ((cachedAction as any) as CachedAction<cooldownWrapAction>)
-            expect(ca[coolDownUntilKey].isAfter(cooldownNow.now())).toBe(true)
+            expect(ca.coolDownUntil.isAfter(cooldownNow.now())).toBe(true)
           })
         }
 
@@ -278,7 +291,7 @@ test('cooled makes retrying work again', () => {
         //insert All Actions To Cache
         for (const action of actions) {
 
-          calledWith.push([action])
+          calledWith.push([upsertActionCreator(action)], [action])
           pipeline.store.dispatch(action)
 
         }
@@ -292,7 +305,7 @@ test('cooled makes retrying work again', () => {
 
           const cancelCooldown = cancelCooldownActionCreator(action)
 
-          calledWith.push([cancelCooldown], [retryAllAction], [action])
+          calledWith.push([cancelCooldown], [retryAllAction], [upsertActionCreator(action)], [action])
 
           pipeline.store.dispatch(cancelCooldown)
           pipeline.store.dispatch(retryAllAction)
@@ -332,7 +345,7 @@ test(`cool and retry all makes retrying work again`, () => {
         //insert All Actions To Cache
         for (const action of actions) {
 
-          calledWith.push([action])
+          calledWith.push([upsertActionCreator(action)], [action])
           pipeline.store.dispatch(action)
 
         }
@@ -347,7 +360,7 @@ test(`cool and retry all makes retrying work again`, () => {
 
         const beforeState = clone(pipeline.store.getState())
 
-        calledWith.push([coolAndRetryAll], ...splitEvery(1, actions))
+        calledWith.push([coolAndRetryAll], ...Actions2RetryAllDispatchPattern(actions))
         pipeline.store.dispatch(coolAndRetryAll)
 
         expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
@@ -361,9 +374,9 @@ test(`cool and retry all makes retrying work again`, () => {
           .forEach((wrappedAction) => {
             const ca = ((wrappedAction as any) as CachedAction<cooldownWrapAction>)
             expect(
-              ca[coolDownUntilKey]
+              ca.coolDownUntil
                 .isSame(
-                  nowPlus5ms.clone().add(conf.cache[ca.action.type].cooldownTime)
+                  nowPlus5ms.clone().add(conf.cache![ca.action.type].cooldownTime)
                 )
             )
               .toBe(true)

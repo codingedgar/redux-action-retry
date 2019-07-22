@@ -1,15 +1,23 @@
 import {
   Config,
-  VisitorNode,
+  // VisitorNode,
   CachedAction,
   REDUX_ACTION_RETRY,
-  cacheLens,
   RETRY_ALL,
+  CacheableAction,
+  INITIAL_STATE,
 } from "../core/index";
+import { ReducerProtocol } from "../core/protocols/ReducerProtocol";
 import { over, reject } from "ramda";
 import { now } from "../now";
 
 import { Duration, Moment } from "moment";
+
+import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UPDATED_PROTOCOL";
+import { APPENDED_PROTOCOL, AppendedProtocol } from "../core/protocols/APPENDED_PROTOCOL";
+import { RetryAllProtocol, RETRY_ALL_PROTOCOL } from "../core/protocols/RETRY_ALL_PROTOCOL";
+import { UPSERTED } from '../core/upsert';
+import { cacheLens } from '../core/utils';
 
 export type timeToLiveConfg = {
   timeToLive: Duration
@@ -21,25 +29,33 @@ export type timeToLiveWrapAction = {
   [liveUntilKey]: Moment
 }
 
-export function liveUntil(wrap: CachedAction<unknown>, config: Config<timeToLiveConfg, timeToLiveWrapAction>): Moment {
-  return now().add(config.cache[wrap.action.type].timeToLive)
+export function liveUntil(action: CacheableAction, config: Config<timeToLiveConfg, timeToLiveWrapAction>): Moment {
+  return now().add(config.cache[action.type].timeToLive)
 }
 
-export function TimeToLive(config: Config<timeToLiveConfg, timeToLiveWrapAction>): VisitorNode<timeToLiveWrapAction> {
+export function TimeToLive(config: Config<timeToLiveConfg, timeToLiveWrapAction>):
+  RetryAllProtocol<timeToLiveWrapAction>
+  &
+  ReducerProtocol<timeToLiveWrapAction>
+  &
+  AppendedProtocol<timeToLiveWrapAction>
+  &
+  UpdatedProtocol<timeToLiveWrapAction> {
   return {
-    actionWrapper(action) {
-      return {
-        [liveUntilKey]: liveUntil(action, config)
-      }
-    },
-    shouldRetryAction(_, cachedAction) {
+    [UPDATED_PROTOCOL]: (_, cachedAction) => ({
+      [liveUntilKey]: liveUntil(cachedAction.action, config)
+    }),
+    [APPENDED_PROTOCOL]: (action) => ({
+      [liveUntilKey]: liveUntil(action[UPSERTED], config)
+    }),
+    [RETRY_ALL_PROTOCOL]: (_, cachedAction) => {
       return now().isBefore(cachedAction[liveUntilKey])
     },
-    reducer(state, action) {
+    reducer: () => (state = INITIAL_STATE, action) => {
 
       if (action.type === REDUX_ACTION_RETRY && action[RETRY_ALL]) {
         const valueOfNow = now()
-        
+
         return over(
           cacheLens,
           reject<CachedAction<timeToLiveWrapAction>>(

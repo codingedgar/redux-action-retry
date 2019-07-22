@@ -1,10 +1,8 @@
 import {
   Config,
-  VisitorNode,
 } from "../core/index";
-import {
-  has,
-} from "ramda";
+import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UPDATED_PROTOCOL";
+import { AppendedProtocol, APPENDED_PROTOCOL } from "../core/protocols/APPENDED_PROTOCOL";
 
 export type timesConfg = {
 }
@@ -15,12 +13,18 @@ export type timesWrapAction = {
   [timesKey]: number
 }
 
-export function times(_: Config<timesConfg, timesWrapAction>): VisitorNode<timesWrapAction> {
+export function times(_: Config<timesConfg, timesWrapAction>):
+  UpdatedProtocol<timesWrapAction>
+  &
+  AppendedProtocol<timesWrapAction> {
   return {
-    actionWrapper(cachedAction) {
+    [UPDATED_PROTOCOL]: (_, cachedAction) => {
       return {
-        [timesKey]: has(timesKey, cachedAction) ? cachedAction.times + 1 : 0
+        [timesKey]: cachedAction.times + 1
       }
-    }
+    },
+    [APPENDED_PROTOCOL]: (_) => ({
+      [timesKey]: 0
+    })
   }
 }

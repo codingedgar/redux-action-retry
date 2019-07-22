@@ -4,8 +4,7 @@ import {
   Config,
   REDUX_ACTION_RETRY,
   cacheConfig,
-  retryAllActionCreator,
-  CachedAction
+  CachedAction,
 } from "../src/core/index";
 import {
   times,
@@ -15,12 +14,10 @@ import {
 
 import { wholePipeline } from "./utils/tearUp";
 
-
-import {
-  splitEvery,
-} from 'ramda';
-
 import uuid from 'uuid/v4'
+import { Actions2RetryAllDispatchPattern } from './utils/fns';
+import { upsertActionCreator } from '../src/core/upsert';
+import { retryAllActionCreator } from '../src/core/retryAll';
 
 
 test('actions are removed from cach after time to live', () => {
@@ -47,7 +44,13 @@ test('actions are removed from cach after time to live', () => {
         for (const action of actions) {
 
           actionsDispached.push(action)
-          calledWith.push([action], [retryAllAction], ...splitEvery(1, actionsDispached))
+
+          calledWith.push(
+            [upsertActionCreator(action)],
+            [action],
+            [retryAllAction],
+            ...Actions2RetryAllDispatchPattern(actionsDispached)
+          )
 
           pipeline.store.dispatch(action)
           pipeline.store.dispatch(retryAllAction)

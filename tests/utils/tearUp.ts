@@ -20,7 +20,7 @@ export function wholePipeline<T,U>(preloadState: any, config: Partial<Config<T,U
     preloadState,
     applyMiddleware
       (
-        reduxActionRetryMiddleware,
+        ...reduxActionRetryMiddleware,
         _store => next => action => {
           gotToReducerSpy(action)
           return next(action)

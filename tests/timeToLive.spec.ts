@@ -2,9 +2,8 @@ import {
   Config,
   REDUX_ACTION_RETRY,
   cacheConfig,
-  retryAllActionCreator,
   CachedAction,
-  CacheableAction
+  CacheableAction,
 } from "../src/core/index";
 import {
   TimeToLive,
@@ -26,11 +25,17 @@ import {
   map,
   pipe,
   sort,
+  partition,
+  reduce
 } from 'ramda';
 
 import uuid from 'uuid/v4'
 import { duration } from "moment";
 import moment from 'moment';
+import { Actions2RetryAllDispatchPattern } from './utils/fns';
+import { upsertActionCreator } from '../src/core/upsert';
+import { retryAllActionCreator } from '../src/core/retryAll';
+// import reduce from 'ramda/es/reduce';
 
 
 jest.mock('../src/now', () => ({
@@ -55,7 +60,7 @@ test('actions are removed from cach after time to live', () => {
           ]
         }
 
-        const times = pipe(
+        const times = pipe<any, any, any[], any[], number[]>(
           values,
           map<timeToLiveConfg, number>(typeConfig => typeConfig.timeToLive.asMilliseconds()),
           uniq,
@@ -72,12 +77,12 @@ test('actions are removed from cach after time to live', () => {
         //insert All Actions To Cache
         for (const action of actions) {
 
-          calledWith.push([action])
+          calledWith.push([upsertActionCreator(action)], [action])
           pipeline.store.dispatch(action)
 
         }
 
-        calledWith.push([retryAllAction], ...splitEvery(1, actions))
+        calledWith.push([retryAllAction], ...Actions2RetryAllDispatchPattern(actions))
         pipeline.store.dispatch(retryAllAction)
 
         expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
@@ -86,14 +91,33 @@ test('actions are removed from cach after time to live', () => {
 
           cooldownNowMock.mockImplementation(() => fixedNow.clone().add(time))
 
-          const actionsThanShouldBeKeep = pipeline.store.getState()[REDUX_ACTION_RETRY].cache
-            .filter((wrappedAction) => {
-              const ca = wrappedAction as any as CachedAction<timeToLiveWrapAction>
-              return ca[liveUntilKey].isAfter(now())
-            })
-            .map(wrappedAction => wrappedAction.action)
+          const [actionsThanShouldBeKeep, actionsThanShouldBeRemoved] = reduce(
+            (acc: [CacheableAction[], CacheableAction[]], cachedAction) => {
+              const ca = cachedAction as any as CachedAction<timeToLiveWrapAction>
+              if (ca[liveUntilKey].isAfter(now())) {
+                acc[0].push(ca.action)
+              } else {
+                acc[1].push(ca.action)
+              }
+              return acc
+            },
+            [[], []]
+          )
+            (pipeline.store.getState()[REDUX_ACTION_RETRY].cache)
 
-          calledWith.push([retryAllAction], ...splitEvery(1, actionsThanShouldBeKeep))
+          calledWith.push(
+            [retryAllAction],
+            ...Actions2RetryAllDispatchPattern(actionsThanShouldBeKeep),
+          )
+
+          // if (actionsThanShouldBeRemoved.length) {
+          //   calledWith.push(
+          //     [{
+          //       type: REDUX_ACTION_RETRY_EVENT,
+          //       REMOVED: actionsThanShouldBeRemoved
+          //     }]
+          //   )
+          // }
 
           pipeline.store.dispatch(retryAllAction)
 
@@ -110,8 +134,7 @@ test('actions are removed from cach after time to live', () => {
           })
 
         }
-
-      })
+      }),
   )
 
 })

@@ -1,29 +1,28 @@
 import * as fc from 'fast-check';
 
 import {
-  Config,
   REDUX_ACTION_RETRY,
   cacheConfig,
-  REMOVE,
-  retryAllActionCreator
+  CacheableAction
 } from "../src/core/index";
 import {
   removeAndRetryAllConfg,
-  removeAndRetryAllWrapAction,
   removeAndRetryAllActionCreator
 } from "../src/removeAndRetryAll";
 
 import { wholePipeline } from "./utils/tearUp";
 
-
 import {
-  splitEvery,
+  find,
 } from 'ramda';
 
 import uuid from 'uuid/v4'
+import { Actions2RetryAllDispatchPattern } from './utils/fns';
+import { upsertActionCreator } from '../src/core/upsert';
+import { retryAllActionCreator } from '../src/core/retryAll';
+import { REMOVED } from '../src/core/protocols/REMOVED_PROTOCOL';
 
-
-test('actions are removed from cach after time to live', () => {
+test.only('actions are removed from cach after time to live', () => {
 
   fc.assert(
     fc.property(
@@ -44,12 +43,15 @@ test('actions are removed from cach after time to live', () => {
         //insert All Actions To Cache
         for (const action of actions) {
 
-          calledWith.push([action])
+          calledWith.push([upsertActionCreator(action)], [action])
           pipeline.store.dispatch(action)
 
         }
 
-        calledWith.push([retryAllAction], ...splitEvery(1, actions))
+        calledWith.push(
+          [retryAllAction],
+          ...Actions2RetryAllDispatchPattern(actions)
+        )
         pipeline.store.dispatch(retryAllAction)
 
         expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
@@ -57,15 +59,19 @@ test('actions are removed from cach after time to live', () => {
         const actionsThanShouldBeFired = pipeline.store.getState()[REDUX_ACTION_RETRY].cache
           .filter(
             (wrappedAction) =>
-              wrappedAction.action.meta[REDUX_ACTION_RETRY].id !== removeAndRetryAllAction[REMOVE].meta[REDUX_ACTION_RETRY].id)
+              !!find<CacheableAction>(
+                removed => wrappedAction.action.meta[REDUX_ACTION_RETRY].id !== removed.meta[REDUX_ACTION_RETRY].id
+              )(removeAndRetryAllAction[REMOVED])
+          )
           .map(wrappedAction => wrappedAction.action)
 
         calledWith.push(
           [removeAndRetryAllAction],
-          ...splitEvery(1, actionsThanShouldBeFired)
+          ...Actions2RetryAllDispatchPattern(actionsThanShouldBeFired)
         )
 
         pipeline.store.dispatch(removeAndRetryAllAction)
+
         expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
 
         expect(
@@ -73,7 +79,10 @@ test('actions are removed from cach after time to live', () => {
         )
           .toEqual(actionsThanShouldBeFired)
 
-      })
+      }),
+    {
+      seed: 1534992873, path: "0:1:0:0:1:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0:0",
+    }
   )
 
 })

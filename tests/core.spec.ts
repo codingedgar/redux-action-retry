@@ -1,9 +1,6 @@
 import * as fc from 'fast-check';
 import {
   REDUX_ACTION_RETRY,
-  resetActionCreator,
-  removeActionCreator,
-  retryAllActionCreator,
   CacheableAction,
 } from "../src/core/index";
 
@@ -11,9 +8,19 @@ import { wholePipeline } from "./utils/tearUp";
 
 import {
   last,
-  splitEvery,
+  identity,
+  converge,
+  map,
+  zipWith,
+  pipe,
+  unnest,
 } from 'ramda';
 import uuid from 'uuid/v4'
+import { Actions2RetryAllDispatchPattern } from './utils/fns';
+import { resetActionCreator } from '../src/core/reset';
+import { upsertActionCreator } from '../src/core/upsert';
+import { retryAllActionCreator } from '../src/core/retryAll';
+import { removeActionCreator } from '../src/core/protocols/REMOVED_PROTOCOL';
 
 test('non cacheable actions are not cached', () => {
 
@@ -213,21 +220,29 @@ test('retry all', () => {
         }
 
         wrappedActions.push(wrappedAction)
+
         actions.push(action)
-        calledWith.push([action], [retryAllAction], ...splitEvery(1, actions))
+
+        calledWith.push(
+          [upsertActionCreator(action)],
+          [action],
+          [retryAllAction],
+          ...Actions2RetryAllDispatchPattern(actions)
+        )
 
         pipeline.store.dispatch(action)
+
         expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)).toEqual(wrappedAction)
 
         const oldState = pipeline.store.getState();
         pipeline.store.dispatch(retryAllAction)
-
 
         expect(pipeline.store.getState()).toEqual(oldState)
 
       }
 
       expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
+      
       expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual(wrappedActions)
 
     })
