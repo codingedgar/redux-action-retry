@@ -26,14 +26,14 @@ import {
   UpdatedProtocolFn,
   UPDATED_PROTOCOL,
   isUpdatedProtocol
-} from "./protocols/UPDATED_PROTOCOL";
+} from "./protocols/UpdatedProtocol";
 
 import {
   APPENDED_PROTOCOL,
   AppendedProtocolFn,
   isAppendedProtocol,
   UpsertedAction
-} from "./protocols/APPENDED_PROTOCOL";
+} from "./protocols/AppendProtocol";
 import { ReducerProtocol } from './protocols/ReducerProtocol';
 import { MiddlewareProtocol } from './protocols/MiddlewareProtocol';
 import { cacheLens } from './utils';

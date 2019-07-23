@@ -1,5 +1,5 @@
 import { CachedAction } from '..';
-import { UpsertedAction } from './APPENDED_PROTOCOL';
+import { UpsertedAction } from './AppendProtocol';
 
 export const UPDATED_PROTOCOL = '@@UPDATED_PROTOCOL';
 export interface UpdatedProtocolFn<U = {}> {

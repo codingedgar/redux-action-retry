@@ -6,6 +6,8 @@ import {
   RETRY_ALL,
   CacheableAction,
   INITIAL_STATE,
+  GarbageCollectorProtocol,
+  GARBAGE_COLLECTOR_PROTOCOL,
 } from "../core/index";
 import { ReducerProtocol } from "../core/protocols/ReducerProtocol";
 import { over, reject } from "ramda";
@@ -13,9 +15,9 @@ import { now } from "../now";
 
 import { Duration, Moment } from "moment";
 
-import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UPDATED_PROTOCOL";
-import { APPENDED_PROTOCOL, AppendedProtocol } from "../core/protocols/APPENDED_PROTOCOL";
-import { RetryAllProtocol, RETRY_ALL_PROTOCOL } from "../core/protocols/RETRY_ALL_PROTOCOL";
+import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UpdatedProtocol";
+import { APPENDED_PROTOCOL, AppendedProtocol } from "../core/protocols/AppendProtocol";
+import { RetryAllProtocol, RETRY_ALL_PROTOCOL } from "../core/protocols/RetryAllProtocol";
 import { UPSERTED } from '../core/upsert';
 import { cacheLens } from '../core/utils';
 
@@ -34,10 +36,11 @@ export function liveUntil(action: CacheableAction, config: Config<timeToLiveConf
 }
 
 export function TimeToLive(config: Config<timeToLiveConfg, timeToLiveWrapAction>):
-  RetryAllProtocol<timeToLiveWrapAction>
+  // RetryAllProtocol<timeToLiveWrapAction>
+  GarbageCollectorProtocol<timeToLiveWrapAction>
   &
-  ReducerProtocol<timeToLiveWrapAction>
-  &
+  // ReducerProtocol<timeToLiveWrapAction>
+  // &
   AppendedProtocol<timeToLiveWrapAction>
   &
   UpdatedProtocol<timeToLiveWrapAction> {
@@ -48,25 +51,6 @@ export function TimeToLive(config: Config<timeToLiveConfg, timeToLiveWrapAction>
     [APPENDED_PROTOCOL]: (action) => ({
       [liveUntilKey]: liveUntil(action[UPSERTED], config)
     }),
-    [RETRY_ALL_PROTOCOL]: (_, cachedAction) => {
-      return now().isBefore(cachedAction[liveUntilKey])
-    },
-    reducer: () => (state = INITIAL_STATE, action) => {
-
-      if (action.type === REDUX_ACTION_RETRY && action[RETRY_ALL]) {
-        const valueOfNow = now()
-
-        return over(
-          cacheLens,
-          reject<CachedAction<timeToLiveWrapAction>>(
-            cachedAction => valueOfNow.isSameOrAfter(cachedAction[liveUntilKey])
-          ),
-          state
-        )
-
-      }
-
-      return state
-    }
+    [GARBAGE_COLLECTOR_PROTOCOL]: (cachedAction) => now().isSameOrAfter(cachedAction[liveUntilKey]),
   }
 }

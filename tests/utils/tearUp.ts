@@ -1,7 +1,7 @@
 import {
   Config,
   createRetryMechanishm,
-} from "../../src/core/index";
+} from "../../src/core";
 
 import {
   createStore,

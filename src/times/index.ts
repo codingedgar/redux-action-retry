@@ -1,8 +1,8 @@
 import {
   Config,
-} from "../core/index";
-import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UPDATED_PROTOCOL";
-import { AppendedProtocol, APPENDED_PROTOCOL } from "../core/protocols/APPENDED_PROTOCOL";
+} from "../core";
+import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UpdatedProtocol";
+import { AppendedProtocol, APPENDED_PROTOCOL } from "../core/protocols/AppendProtocol";
 
 export type timesConfg = {
 }

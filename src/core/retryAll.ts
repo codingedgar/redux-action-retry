@@ -9,7 +9,7 @@ import {
   CachedAction,
 } from '.';
 
-import { RETRY_ALL_PROTOCOL, RetryAllProtocolFn, isRetryAllProtocol, RetryAllCommand } from "./protocols/RETRY_ALL_PROTOCOL";
+import { RETRY_ALL_PROTOCOL, RetryAllProtocolFn, isRetryAllProtocol, RetryAllCommand } from "./protocols/RetryAllProtocol";
 
 import { MiddlewareProtocol } from './protocols/MiddlewareProtocol';
 

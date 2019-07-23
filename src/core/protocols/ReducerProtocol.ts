@@ -1,5 +1,5 @@
 import { Reducer, AnyAction } from 'redux';
-import { State } from '../index';
+import { State } from '../../core';
 export interface ReducerProtocol<U = {}> {
   reducer: (initializedExtensions: any[]) => Reducer<State<U>, AnyAction>;
 }

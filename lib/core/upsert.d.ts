@@ -1,7 +1,7 @@
 import { AnyAction } from 'redux';
 import { Config } from '.';
 import { RarAction, CacheableAction } from '.';
-import { UpsertedAction } from "./protocols/APPENDED_PROTOCOL";
+import { UpsertedAction } from "./protocols/AppendProtocol";
 import { ReducerProtocol } from './protocols/ReducerProtocol';
 import { MiddlewareProtocol } from './protocols/MiddlewareProtocol';
 export declare const UPSERTED = "UPSERTED";

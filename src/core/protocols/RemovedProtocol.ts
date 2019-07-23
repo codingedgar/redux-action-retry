@@ -1,4 +1,4 @@
-import { CachedAction, CacheableAction, REDUX_ACTION_RETRY, RarAction,  } from '..';
+import { CachedAction, CacheableAction, REDUX_ACTION_RETRY, RarAction, } from '..';
 import { AnyAction } from 'redux';
 
 export const REMOVED_PROTOCOL = '@@REMOVED_PROTOCOL';
@@ -16,6 +16,13 @@ export function removeActionCreator(action: CacheableAction): RemovedEvent {
   return {
     type: REDUX_ACTION_RETRY,
     [REMOVED]: [action]
+  }
+}
+
+export function removeActionsCreator(actions: CacheableAction[]): RemovedEvent {
+  return {
+    type: REDUX_ACTION_RETRY,
+    [REMOVED]: actions
   }
 }
 

@@ -8,19 +8,13 @@ import { wholePipeline } from "./utils/tearUp";
 
 import {
   last,
-  identity,
-  converge,
-  map,
-  zipWith,
-  pipe,
-  unnest,
 } from 'ramda';
 import uuid from 'uuid/v4'
 import { Actions2RetryAllDispatchPattern } from './utils/fns';
 import { resetActionCreator } from '../src/core/reset';
 import { upsertActionCreator } from '../src/core/upsert';
 import { retryAllActionCreator } from '../src/core/retryAll';
-import { removeActionCreator } from '../src/core/protocols/REMOVED_PROTOCOL';
+import { removeActionCreator } from '../src/core/protocols/RemovedProtocol';
 
 test('non cacheable actions are not cached', () => {
 

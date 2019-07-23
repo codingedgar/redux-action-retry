@@ -16,6 +16,7 @@ import { Reducer, AnyAction, Middleware } from 'redux';
 import { retryAll } from './retryAll';
 import { ReducerProtocol, isReducerProtocol } from './protocols/ReducerProtocol';
 import { MiddlewareProtocol, isMiddleware } from './protocols/MiddlewareProtocol';
+import { garbageCollector } from './garbageCollector';
 
 type RetryMechanishm<T, U> = {
   stateKeyName: string,
@@ -34,6 +35,7 @@ export function createRetryMechanishm<T, U>(initConfig: Partial<Config<T, U>>): 
       reset,
       remove,
       retryAll,
+      garbageCollector
     ]
   }
 

@@ -4,14 +4,14 @@ import {
   CacheableAction,
   RETRY_ALL,
   RarAction,
-} from "../core/index";
+} from "../core";
 
 import { now } from "../now";
 
 import { Duration, Moment } from "moment";
-import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UPDATED_PROTOCOL";
-import { APPENDED_PROTOCOL, AppendedProtocol, UpsertedAction } from "../core/protocols/APPENDED_PROTOCOL";
-import { RetryAllProtocol, RETRY_ALL_PROTOCOL, RetryAllCommand } from "../core/protocols/RETRY_ALL_PROTOCOL";
+import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UpdatedProtocol";
+import { APPENDED_PROTOCOL, AppendedProtocol, UpsertedAction } from "../core/protocols/AppendProtocol";
+import { RetryAllProtocol, RETRY_ALL_PROTOCOL, RetryAllCommand } from "../core/protocols/RetryAllProtocol";
 import { UPSERTED } from '../core/upsert';
 
 export const CANCEL_COOLDOWN = `CANCEL_COOLDOWN`

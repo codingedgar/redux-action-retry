@@ -4,6 +4,8 @@ import {
   cacheConfig,
   CachedAction,
   CacheableAction,
+  collectGarbageActionCreator,
+  removeActionsCreator,
 } from "../src/core/index";
 import {
   TimeToLive,
@@ -72,6 +74,7 @@ test('actions are removed from cach after time to live', () => {
 
         const calledWith = []
         const retryAllAction = retryAllActionCreator()
+        const collectGarbageAction = collectGarbageActionCreator()
 
 
         //insert All Actions To Cache
@@ -106,20 +109,11 @@ test('actions are removed from cach after time to live', () => {
             (pipeline.store.getState()[REDUX_ACTION_RETRY].cache)
 
           calledWith.push(
-            [retryAllAction],
-            ...Actions2RetryAllDispatchPattern(actionsThanShouldBeKeep),
+            [collectGarbageAction],
+            [removeActionsCreator(actionsThanShouldBeRemoved)]
           )
 
-          // if (actionsThanShouldBeRemoved.length) {
-          //   calledWith.push(
-          //     [{
-          //       type: REDUX_ACTION_RETRY_EVENT,
-          //       REMOVED: actionsThanShouldBeRemoved
-          //     }]
-          //   )
-          // }
-
-          pipeline.store.dispatch(retryAllAction)
+          pipeline.store.dispatch(collectGarbageAction)
 
           expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
 

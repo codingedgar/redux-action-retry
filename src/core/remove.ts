@@ -16,7 +16,7 @@ import {
 
 import { AnyAction } from 'redux';
 import { cacheLens } from './utils';
-import { REMOVED, isRemovedEvent } from './protocols/REMOVED_PROTOCOL';
+import { REMOVED, isRemovedEvent } from './protocols/RemovedProtocol';
 
 export function remove(_config: Config) {
   return {

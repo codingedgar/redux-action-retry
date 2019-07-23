@@ -1,8 +1,8 @@
-import { Config, CacheableAction, RarAction } from "../core/index";
+import { Config, CacheableAction, RarAction } from "../core";
 import { Duration, Moment } from "moment";
-import { UpdatedProtocol } from "../core/protocols/UPDATED_PROTOCOL";
-import { AppendedProtocol, UpsertedAction } from "../core/protocols/APPENDED_PROTOCOL";
-import { RetryAllProtocol, RetryAllCommand } from "../core/protocols/RETRY_ALL_PROTOCOL";
+import { UpdatedProtocol } from "../core/protocols/UpdatedProtocol";
+import { AppendedProtocol, UpsertedAction } from "../core/protocols/AppendProtocol";
+import { RetryAllProtocol, RetryAllCommand } from "../core/protocols/RetryAllProtocol";
 export declare const CANCEL_COOLDOWN = "CANCEL_COOLDOWN";
 export declare const COOL_AND_RETRY_ALL = "COOL_AND_RETRY_ALL";
 export declare type cancelCooldownAction = RarAction & UpsertedAction & {

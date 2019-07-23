@@ -9,6 +9,7 @@ export declare type RemoveProtocol<U> = {
 };
 export declare const REMOVED = "REMOVED";
 export declare function removeActionCreator(action: CacheableAction): RemovedEvent;
+export declare function removeActionsCreator(actions: CacheableAction[]): RemovedEvent;
 export declare type RemovedEvent = RarAction & {
     [REMOVED]: readonly CacheableAction[];
 };

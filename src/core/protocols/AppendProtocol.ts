@@ -1,5 +1,4 @@
 import { RarAction } from '..';
-import { AnyAction } from 'redux';
 import { REDUX_ACTION_RETRY, CacheableAction } from '..';
 import { UPSERTED } from '../upsert';
 
