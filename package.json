@@ -1,20 +1,23 @@
 {
   "name": "redux-action-retry",
-  "version": "1.0.0-beta",
+  "version": "0.1.0",
   "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:edgarjrg/redux-action-retry.git"
   },
-  "description": "Retry Redux actions at least once until success",
+  "description": "At least once delivery of Redux Actions",
   "author": "edgar rodriguez <edgarj.rodriguezg@gmail.com>",
   "license": "MIT",
   "keywords": [
     "react",
+    "react offline",
     "react native",
     "react native offline",
     "redux",
+    "redux offline",
     "redux saga",
+    "redux saga offline",
     "offline",
     "retry",
     "retry offline"
@@ -25,12 +28,11 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.15",
-    "@types/ramda": "0.26.16",
+    "@types/ramda": "0.26.18",
     "@types/redux": "3.6.0",
     "@types/uuid": "3.4.5",
     "fast-check": "1.16.0",
     "jest": "24.8.0",
-    "testcheck": "1.0.0-rc.2",
     "ts-jest": "24.0.2",
     "typescript": "3.5.3",
     "uuid": "3.3.2"

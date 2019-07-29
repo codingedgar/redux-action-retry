@@ -355,10 +355,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.6.1.tgz#d5544f6de0aae03eefbb63d5120f6c8be0691946"
   integrity sha512-rp7La3m845mSESCgsJePNL/JQyhkOJA6G4vcwvVgkDAwHhGdq5GCumxmPjEk1MZf+8p5ZQAUE7tqgQRQTXN7uQ==
 
-"@types/ramda@0.26.16":
-  version "0.26.16"
-  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.26.16.tgz#1245a75b0cb5f27bc8fccace720da13cfafa18e2"
-  integrity sha512-J+cv6Tm8tCovBt2SqEpy6Mzuf3XPPUW5X491yCHSgKs7epz2yNPupCik4BOIzpg5VF23cs6P2X8e66IUBPrgmQ==
+"@types/ramda@0.26.18":
+  version "0.26.18"
+  resolved "https://registry.yarnpkg.com/@types/ramda/-/ramda-0.26.18.tgz#a80f02b046edd5ff777e863732591bd50c53236e"
+  integrity sha512-wK3NLaAkL/ht7Nw4IZsOagJuYqzZgoboFvILolOPtmoKyy25gTdz/uvB/bXsv6vdWENYv+ml5ph873P2d/+9HA==
 
 "@types/redux@3.6.0":
   version "3.6.0"
@@ -3317,11 +3317,6 @@ test-exclude@^5.2.3:
     minimatch "^3.0.4"
     read-pkg-up "^4.0.0"
     require-main-filename "^2.0.0"
-
-testcheck@1.0.0-rc.2:
-  version "1.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/testcheck/-/testcheck-1.0.0-rc.2.tgz#11356a25b84575efe0b0857451e85b5fa74ee4e4"
-  integrity sha1-ETVqJbhFde/gsIV0UehbX6dO5OQ=
 
 throat@^4.0.0:
   version "4.1.0"
