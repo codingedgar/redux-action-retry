@@ -1,6 +1,6 @@
 import {
   Config,
-  createRetryMechanishm,
+  createRetryMechanism,
 } from "../../src/core";
 
 import {
@@ -12,7 +12,7 @@ import {
 export function wholePipeline<T,U>(preloadState: any, config: Partial<Config<T,U>>) {
 
   const gotToReducerSpy = jest.fn();
-  const { reducer, reduxActionRetryMiddleware, stateKeyName } = createRetryMechanishm<T,U>(config)
+  const { reducer, reduxActionRetryMiddleware, stateKeyName } = createRetryMechanism<T,U>(config)
   const store = createStore(
     combineReducers({
       [stateKeyName]: reducer

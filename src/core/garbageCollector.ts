@@ -68,7 +68,7 @@ import {
   GARBAGE_COLLECTOR_PROTOCOL,
   GarbageCollectorProtocolFn,
   isCollectGarbageCommand,
-} from './protocols/garbageCollectorProtocol';
+} from './protocols/GarbageCollectorProtocol';
 import { removeActionsCreator } from './protocols/RemovedProtocol';
 import { CacheableAction } from './types';
 // import anyPass from 'ramda/es/anyPass';

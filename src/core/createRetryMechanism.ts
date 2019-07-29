@@ -18,13 +18,13 @@ import { ReducerProtocol, isReducerProtocol } from './protocols/ReducerProtocol'
 import { MiddlewareProtocol, isMiddleware } from './protocols/MiddlewareProtocol';
 import { garbageCollector } from './garbageCollector';
 
-type RetryMechanishm<T, U> = {
+type RetryMechanism<T, U> = {
   stateKeyName: string,
   reducer: Reducer<State<U>>,
   reduxActionRetryMiddleware: Middleware<State<U>>[]
 }
 
-export function createRetryMechanishm<T, U>(initConfig: Partial<Config<T, U>>): RetryMechanishm<T, U> {
+export function createRetryMechanism<T, U>(initConfig: Partial<Config<T, U>>): RetryMechanism<T, U> {
 
   const defaultConfig: Config =
   {

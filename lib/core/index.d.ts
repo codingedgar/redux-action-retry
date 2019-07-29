@@ -5,7 +5,7 @@ export * from "./protocols/RemovedProtocol";
 export * from "./protocols/RetryAllProtocol";
 export * from "./protocols/ReducerProtocol";
 export * from "./protocols/UpdatedProtocol";
-export * from "./protocols/garbageCollectorProtocol";
+export * from "./protocols/GarbageCollectorProtocol";
 export * from "./remove";
 export * from "./reset";
 export * from "./retryAll";
