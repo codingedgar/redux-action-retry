@@ -1,6 +1,5 @@
 import { AnyAction } from 'redux';
-import { Config } from '.';
-import { RarAction, CacheableAction } from '.';
+import { Config, RarAction, CacheableAction } from './types';
 import { UpsertedAction } from "./protocols/AppendProtocol";
 import { ReducerProtocol } from './protocols/ReducerProtocol';
 import { MiddlewareProtocol } from './protocols/MiddlewareProtocol';

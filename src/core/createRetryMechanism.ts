@@ -7,7 +7,7 @@ import {
   REDUX_ACTION_RETRY,
   State,
   INITIAL_STATE,
-} from '.';
+} from './types';
 
 import { upsert } from './upsert';
 import { reset } from './reset';

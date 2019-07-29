@@ -7,20 +7,17 @@ import {
   over,
 } from 'ramda';
 
-import { Reducer, AnyAction } from 'redux';
+import { AnyAction } from 'redux';
 
 import {
   Config,
   State,
   REDUX_ACTION_RETRY,
   CachedAction,
-} from '.';
-
-import {
   INITIAL_STATE,
   RarAction,
   CacheableAction,
-} from '.';
+} from './types';
 
 import {
   UpdatedProtocolFn,
@@ -122,7 +119,7 @@ export function upsert(config: Config): ReducerProtocol & MiddlewareProtocol {
   }
 }
 
-type UpsertAction = RarAction  & {
+type UpsertAction = RarAction & {
   [UPSERTED]: CacheableAction,
 }
 

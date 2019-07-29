@@ -7,7 +7,7 @@ import {
   REDUX_ACTION_RETRY,
   RETRY_ALL,
   CachedAction,
-} from '.';
+} from './types';
 
 import { RETRY_ALL_PROTOCOL, RetryAllProtocolFn, isRetryAllProtocol, RetryAllCommand } from "./protocols/RetryAllProtocol";
 

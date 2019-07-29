@@ -1,4 +1,4 @@
-import { CachedAction, RETRY_ALL, RarAction } from '..';
+import { CachedAction, RETRY_ALL, RarAction } from '../types';
 
 export const RETRY_ALL_PROTOCOL = '@@RETRY_ALL_PROTOCOL';
 

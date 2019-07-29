@@ -1,25 +1,15 @@
 import {
   Config,
-  // VisitorNode,
-  CachedAction,
-  REDUX_ACTION_RETRY,
-  RETRY_ALL,
   CacheableAction,
-  INITIAL_STATE,
-  GarbageCollectorProtocol,
-  GARBAGE_COLLECTOR_PROTOCOL,
-} from "../core/index";
-import { ReducerProtocol } from "../core/protocols/ReducerProtocol";
-import { over, reject } from "ramda";
+} from "../core/types";
 import { now } from "../now";
 
 import { Duration, Moment } from "moment";
 
 import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UpdatedProtocol";
 import { APPENDED_PROTOCOL, AppendedProtocol } from "../core/protocols/AppendProtocol";
-import { RetryAllProtocol, RETRY_ALL_PROTOCOL } from "../core/protocols/RetryAllProtocol";
 import { UPSERTED } from '../core/upsert';
-import { cacheLens } from '../core/utils';
+import { GarbageCollectorProtocol, GARBAGE_COLLECTOR_PROTOCOL } from "../core/protocols/GarbageCollectorProtocol";
 
 export type timeToLiveConfg = {
   timeToLive: Duration
@@ -36,11 +26,8 @@ export function liveUntil(action: CacheableAction, config: Config<timeToLiveConf
 }
 
 export function TimeToLive(config: Config<timeToLiveConfg, timeToLiveWrapAction>):
-  // RetryAllProtocol<timeToLiveWrapAction>
   GarbageCollectorProtocol<timeToLiveWrapAction>
   &
-  // ReducerProtocol<timeToLiveWrapAction>
-  // &
   AppendedProtocol<timeToLiveWrapAction>
   &
   UpdatedProtocol<timeToLiveWrapAction> {

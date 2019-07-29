@@ -1,5 +1,6 @@
 import { Middleware } from 'redux';
-import { State } from '../../core';
+import { State } from '../types';
+
 export interface MiddlewareProtocol<U = {}> {
   middleware: (initializedExtensions: any[]) => Middleware<State<U>>;
 }

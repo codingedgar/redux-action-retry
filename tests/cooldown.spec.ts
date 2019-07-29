@@ -1,11 +1,4 @@
 import {
-  Config,
-  REDUX_ACTION_RETRY,
-  cacheConfig,
-  CacheableAction,
-  CachedAction,
-} from "../src/core/index";
-import {
   Cooldown,
   cooldownConfg,
   cooldownWrapAction,
@@ -34,6 +27,7 @@ import moment from 'moment';
 import { Actions2RetryAllDispatchPattern } from './utils/fns';
 import { upsertActionCreator } from '../src/core/upsert';
 import { retryAllActionCreator } from '../src/core/retryAll';
+import { Config, REDUX_ACTION_RETRY, CachedAction, CacheableAction, cacheConfig } from "../src/core/types";
 
 
 jest.mock('../src/now', () => ({

@@ -1,5 +1,5 @@
-import { CachedAction, RarAction } from '..';
 import { AnyAction } from 'redux';
+import { CachedAction, RarAction } from '../types';
 export declare const GARBAGE_COLLECTOR_PROTOCOL = "@@GARBAGE_COLLECTOR_PROTOCOL";
 export interface GarbageCollectorProtocolFn<U = {}> {
     (action: CachedAction<U>): boolean;

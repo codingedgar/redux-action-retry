@@ -5,7 +5,7 @@ import {
   REDUX_ACTION_RETRY,
   cacheConfig,
   CachedAction,
-} from "../src/core/index";
+} from "../src/core/types";
 import {
   times,
   timesConfg,

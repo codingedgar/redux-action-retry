@@ -1,54 +1,4 @@
-// import {
-//   reject,
-//   over,
-//   anyPass,
-//   find,
-// } from 'ramda';
-// import {
-//   Config,
-//   State,
-//   INITIAL_STATE,
-//   REDUX_ACTION_RETRY,
-//   CachedAction,
-//   CacheableAction,
-//   RarAction,
-// } from '.';
-
-// import { AnyAction } from 'redux';
-// import { cacheLens } from './utils';
-// import { COLLECT_GARBAGE, isCollectGarbaseCommand } from './protocols/garbageCollectorProtocol';
-
-// export function garbageCollector(_config: Config) {
-//   return {
-//     mi: () =>
-//       (state: State = INITIAL_STATE, action: AnyAction): State => {
-//         if (isCollectGarbaseCommand(action)) {
-
-//           return over(
-//             cacheLens,
-//             reject<CachedAction>(
-//               anyPass([
-//                 cachedAction => !!find(
-//                   removedAction => {
-//                     return removedAction.meta[REDUX_ACTION_RETRY].id === cachedAction.action.meta[REDUX_ACTION_RETRY].id
-//                   }
-//                   , action[REMOVED]),
-//               ])
-//             ),
-//             state
-//           )
-
-//         }
-
-//         return state
-
-//       }
-//   }
-// }
-
-
 import {
-  allPass,
   anyPass,
   path,
   filter,
@@ -60,7 +10,7 @@ import {
 import {
   Config,
   CachedAction,
-} from '.';
+} from './types';
 
 import { MiddlewareProtocol } from './protocols/MiddlewareProtocol';
 import {
@@ -71,7 +21,6 @@ import {
 } from './protocols/GarbageCollectorProtocol';
 import { removeActionsCreator } from './protocols/RemovedProtocol';
 import { CacheableAction } from './types';
-// import anyPass from 'ramda/es/anyPass';
 
 export function garbageCollector(config: Config): MiddlewareProtocol {
 

@@ -1,4 +1,4 @@
-import { Config, State } from '.';
+import { Config, State } from './types';
 import { Reducer, Middleware } from 'redux';
 declare type RetryMechanism<T, U> = {
     stateKeyName: string;

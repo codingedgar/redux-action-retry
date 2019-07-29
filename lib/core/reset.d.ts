@@ -1,4 +1,4 @@
-import { Config, State, RarAction } from '.';
+import { Config, State, RarAction } from './types';
 import { AnyAction } from 'redux';
 export declare const RESET = "RESET";
 export declare function reset(_: Config): {

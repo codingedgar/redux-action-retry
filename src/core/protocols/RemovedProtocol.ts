@@ -1,4 +1,4 @@
-import { CachedAction, CacheableAction, REDUX_ACTION_RETRY, RarAction, } from '..';
+import { CachedAction, CacheableAction, REDUX_ACTION_RETRY, RarAction, } from '../types';
 import { AnyAction } from 'redux';
 
 export const REMOVED_PROTOCOL = '@@REMOVED_PROTOCOL';

@@ -1,8 +1,4 @@
 import * as fc from 'fast-check';
-import {
-  REDUX_ACTION_RETRY,
-  CacheableAction,
-} from "../src/core/index";
 
 import { wholePipeline } from "./utils/tearUp";
 
@@ -15,6 +11,7 @@ import { resetActionCreator } from '../src/core/reset';
 import { upsertActionCreator } from '../src/core/upsert';
 import { retryAllActionCreator } from '../src/core/retryAll';
 import { removeActionCreator } from '../src/core/protocols/RemovedProtocol';
+import { REDUX_ACTION_RETRY, CacheableAction } from '../src/core/types';
 
 test('non cacheable actions are not cached', () => {
 
@@ -236,7 +233,7 @@ test('retry all', () => {
       }
 
       expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
-      
+
       expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual(wrappedActions)
 
     })

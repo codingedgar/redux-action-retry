@@ -1,4 +1,4 @@
-import { CachedAction, CacheableAction, RarAction } from '..';
+import { CachedAction, CacheableAction, RarAction } from '../types';
 import { AnyAction } from 'redux';
 export declare const REMOVED_PROTOCOL = "@@REMOVED_PROTOCOL";
 export interface RemoveProtocolFn<U> {

@@ -1,6 +1,6 @@
 import {
   Config,
-} from "../core";
+} from "../core/types";
 import { UpdatedProtocol, UPDATED_PROTOCOL } from "../core/protocols/UpdatedProtocol";
 import { AppendedProtocol, APPENDED_PROTOCOL } from "../core/protocols/AppendProtocol";
 

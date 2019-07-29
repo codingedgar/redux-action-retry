@@ -4,9 +4,7 @@ import {
   cacheConfig,
   CachedAction,
   CacheableAction,
-  collectGarbageActionCreator,
-  removeActionsCreator,
-} from "../src/core/index";
+} from "../src/core/types";
 import {
   TimeToLive,
   timeToLiveConfg,
@@ -37,6 +35,8 @@ import moment from 'moment';
 import { Actions2RetryAllDispatchPattern } from './utils/fns';
 import { upsertActionCreator } from '../src/core/upsert';
 import { retryAllActionCreator } from '../src/core/retryAll';
+import { collectGarbageActionCreator } from "../src/core/protocols/GarbageCollectorProtocol";
+import { removeActionsCreator } from "../src/core/protocols/RemovedProtocol";
 // import reduce from 'ramda/es/reduce';
 
 

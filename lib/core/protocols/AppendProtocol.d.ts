@@ -1,6 +1,5 @@
-import { RarAction } from '..';
-import { REDUX_ACTION_RETRY, CacheableAction } from '..';
 import { UPSERTED } from '../upsert';
+import { RarAction, REDUX_ACTION_RETRY, CacheableAction } from '../types';
 export declare const APPENDED_PROTOCOL = "@@APPENDED_PROTOCOL";
 export interface AppendedProtocolFn<U = {}> {
     (action: UpsertedAction): U;

@@ -1,5 +1,5 @@
-import { CachedAction, CacheableAction, REDUX_ACTION_RETRY, RarAction, } from '..';
 import { AnyAction } from 'redux';
+import { REDUX_ACTION_RETRY, CachedAction, RarAction } from '../types';
 
 export const GARBAGE_COLLECTOR_PROTOCOL = '@@GARBAGE_COLLECTOR_PROTOCOL';
 

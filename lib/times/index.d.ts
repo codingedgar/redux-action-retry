@@ -1,4 +1,4 @@
-import { Config } from "../core";
+import { Config } from "../core/types";
 import { UpdatedProtocol } from "../core/protocols/UpdatedProtocol";
 import { AppendedProtocol } from "../core/protocols/AppendProtocol";
 export declare type timesConfg = {};

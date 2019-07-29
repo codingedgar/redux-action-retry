@@ -10,9 +10,7 @@ import {
   INITIAL_STATE,
   REDUX_ACTION_RETRY,
   CachedAction,
-  CacheableAction,
-  RarAction,
-} from '.';
+} from './types';
 
 import { AnyAction } from 'redux';
 import { cacheLens } from './utils';

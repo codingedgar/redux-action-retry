@@ -1,7 +1,8 @@
-import { Config, CacheableAction, GarbageCollectorProtocol } from "../core/index";
+import { Config, CacheableAction } from "../core/types";
 import { Duration, Moment } from "moment";
 import { UpdatedProtocol } from "../core/protocols/UpdatedProtocol";
 import { AppendedProtocol } from "../core/protocols/AppendProtocol";
+import { GarbageCollectorProtocol } from "../core/protocols/GarbageCollectorProtocol";
 export declare type timeToLiveConfg = {
     timeToLive: Duration;
 };
