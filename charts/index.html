@@ -1,0 +1,97 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['timeline'] });
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var container = document.getElementById('timeline');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Label' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([
+      ['1min', '1min', '#f2f2f2', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 1, 0),],
+      ['Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Retried Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 50)],
+      ['Danger Zone', 'Overlapping', '#db4437', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 21)],
+    ]);
+
+    chart.draw(dataTable, {
+      timeline: {
+        showRowLabels: true,
+        colorByRowLabel: false,
+      }
+    });
+  }
+</script>
+
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['timeline'] });
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var container = document.getElementById('timeline2');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Label' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([
+      ['1min', '1min', '#f2f2f2', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 1, 0)],
+      ['Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 31)],
+      ['Retried Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 1, 3)],
+      ['Retried Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 1, 4)],
+      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 21)],
+      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 0, 34)],
+    ]);
+
+    chart.draw(dataTable, {
+      timeline: {
+        showRowLabels: true,
+      }
+    });
+  }
+</script>
+
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['timeline'] });
+  google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+    var container = document.getElementById('timeline3');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Label' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([
+      ['1min', '1min', '#f2f2f2', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 1, 0)],
+      ['Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 10)],
+      ['Retried Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 50)],
+      ['Commands', 'Cancel Cooldown', '#6bd5ff', new Date(2019, 7, 30, 0, 0, 10), new Date(2019, 7, 30, 0, 0, 11)],
+      ['Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 10)],
+      ['Retried Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 51)],
+      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 21)],
+      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 0, 34)],
+    ]);
+
+    chart.draw(dataTable, {
+      timeline: {
+        showRowLabels: true,
+      }
+    });
+  }
+</script>
+
+<div id="timeline" style="height: 400px;"></div>
+<div id="timeline2" style="height: 400px;"></div>
+<div id="timeline3" style="height: 400px;"></div>
