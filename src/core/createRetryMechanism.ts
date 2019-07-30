@@ -21,7 +21,7 @@ import { garbageCollector } from './garbageCollector';
 type RetryMechanism<T, U> = {
   stateKeyName: string,
   reducer: Reducer<State<U>>,
-  reduxActionRetryMiddleware: Middleware<State<U>>[]
+  reduxActionRetryMiddlewares: Middleware<State<U>>[]
 }
 
 export function createRetryMechanism<T, U>(initConfig: Partial<Config<T, U>>): RetryMechanism<T, U> {
@@ -79,7 +79,7 @@ export function createRetryMechanism<T, U>(initConfig: Partial<Config<T, U>>): R
       return reducers.reduce((s, fn) => fn(s, action), state)
 
     },
-    reduxActionRetryMiddleware: [
+    reduxActionRetryMiddlewares: [
       ...middlewares.map(m => m.middleware(visitors)),
     ]
   }

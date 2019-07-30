@@ -15,7 +15,7 @@ import {
 export function wholePipeline<T,U>(preloadState: any, config: Partial<Config<T,U>>) {
 
   const gotToReducerSpy = jest.fn();
-  const { reducer, reduxActionRetryMiddleware, stateKeyName } = createRetryMechanism<T,U>(config)
+  const { reducer, reduxActionRetryMiddlewares, stateKeyName } = createRetryMechanism<T,U>(config)
   const store = createStore(
     combineReducers({
       [stateKeyName]: reducer
@@ -23,7 +23,7 @@ export function wholePipeline<T,U>(preloadState: any, config: Partial<Config<T,U
     preloadState,
     applyMiddleware
       (
-        ...reduxActionRetryMiddleware,
+        ...reduxActionRetryMiddlewares,
         _store => next => action => {
           gotToReducerSpy(action)
           return next(action)
