@@ -1,242 +1,262 @@
 import * as fc from 'fast-check';
-
-import { wholePipeline } from "./utils/tearUp";
-
+import { last } from 'ramda';
+import { wholePipeline } from "./utils/wholePipeline";
+import { Actions2RetryAllPattern } from './utils/Actions2RetryAllPattern';
 import {
-  last,
-} from 'ramda';
-import uuid from 'uuid/v4'
-import { Actions2RetryAllDispatchPattern } from './utils/fns';
-import { resetActionCreator } from '../src/core/reset';
-import { upsertActionCreator } from '../src/core/upsert';
-import { retryAllActionCreator } from '../src/core/retryAll';
-import { removeActionCreator } from '../src/core/protocols/RemovedProtocol';
-import { REDUX_ACTION_RETRY, CacheableAction } from '../src/core/types';
+  resetActionCreator,
+  retryAllActionCreator,
+  removeActionCreator,
+  REDUX_ACTION_RETRY,
+} from '../src/';
 
-test('non cacheable actions are not cached', () => {
+test('Non cacheable actions are not cached', () => {
 
   fc.assert(
-    fc.property(fc.array(fc.tuple(fc.fullUnicodeString(), fc.fullUnicodeString())), (arr) => {
+    fc.property(
+      fc.array(
+        fc.tuple(
+          fc.fullUnicodeString(),
+          fc.fullUnicodeString()
+        )
+      ),
+      (arr) => {
 
-      const pipeline = wholePipeline({}, {
-        cache: {},
-      })
+        const pipeline = wholePipeline({}, {
+          cache: {},
+        })
 
-      for (const iterator of arr) {
+        for (const iterator of arr) {
 
-        const action = {
-          type: iterator[0],
-          payload: iterator[1],
+          const action = {
+            type: iterator[0],
+            payload: iterator[1],
+          }
+
+          pipeline.store.dispatch(action)
+
+          expect(pipeline.store.getState())
+            .toEqual({ [REDUX_ACTION_RETRY]: { cache: [] } })
         }
 
-        pipeline.store.dispatch(action)
-        expect(pipeline.store.getState()).toEqual({ [REDUX_ACTION_RETRY]: { cache: [] } })
       }
-
-    })
+    )
   )
-
 })
 
 test('Cacheable actions are cached', () => {
 
   fc.assert(
-    fc.property(fc.array(fc.tuple(fc.fullUnicodeString(1, 15), fc.fullUnicodeString()), 1, 15), (arr) => {
+    fc.property(
+      fc.array(
+        fc.record({
+          type: fc.fullUnicodeString(1, 15),
+          payload: fc.fullUnicodeString(),
+          id: fc.uuid()
+        }),
+        1,
+        15),
+      (actions) => {
 
-      const conf = {
-        cache: arr.reduce(
-          (acc, x) => ({
-            ...acc,
-            [x[0]]: {}
-          }),
-          {}
-        )
-      }
+        const config = {
+          cache: actions.reduce(
+            (config, action) => ({
+              ...config,
+              [action.type]: {}
+            }),
+            {}
+          )
+        }
 
-      const pipeline = wholePipeline({}, conf)
-      const actions = []
+        const pipeline = wholePipeline({}, config)
+        const expectedCachedActions = []
 
-      for (const iterator of arr) {
+        for (const inputAction of actions) {
 
-        const action = {
-          type: iterator[0],
-          payload: iterator[1],
-          meta: {
-            [REDUX_ACTION_RETRY]: {
-              id: uuid()
+          const action = {
+            type: inputAction.type,
+            payload: inputAction.payload,
+            meta: {
+              [REDUX_ACTION_RETRY]: {
+                id: inputAction.id
+              }
             }
           }
+
+          const cacheWrap = {
+            action
+          }
+
+          expectedCachedActions.push(cacheWrap)
+
+          pipeline.store.dispatch(action)
+
+          expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache))
+            .toEqual(cacheWrap)
         }
 
-        const cacheWrap = {
-          action
-        }
+        expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)
+          .toEqual(expectedCachedActions)
 
-        actions.push(cacheWrap)
-
-        pipeline.store.dispatch(action)
-
-        expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)).toEqual(cacheWrap)
       }
-
-      expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual(actions)
-
-    })
+    )
   )
-
 })
 
-test('reset returns empty cache', () => {
+test('Reset returns empty cache', () => {
 
   fc.assert(
-    fc.property(fc.array(fc.tuple(fc.fullUnicodeString(1, 15), fc.fullUnicodeString()), 1), (arr) => {
+    fc.property(
+      fc.array(
+        fc.record({
+          type: fc.fullUnicodeString(1, 15),
+          payload: fc.fullUnicodeString(),
+          meta: fc.record({
+            [REDUX_ACTION_RETRY]: fc.record({
+              id: fc.uuid()
+            })
+          })
+        }),
+        1,
+        15
+      ),
+      (actions) => {
 
-      const conf = {
-        cache: arr.reduce(
-          (acc, x) => ({ ...acc, [x[0]]: {} }),
-          {}
-        )
-      }
-
-      const pipeline = wholePipeline({}, conf)
-      const resetAction = resetActionCreator()
-
-      for (const iterator of arr) {
-
-        const action = {
-          type: iterator[0],
-          payload: iterator[1],
-          meta: {
-            [REDUX_ACTION_RETRY]: {
-              id: uuid()
-            }
-          }
+        const libConfig = {
+          cache: actions.reduce(
+            (config, action) => ({
+              ...config,
+              [action.type]: {}
+            }),
+            {}
+          )
         }
 
-        pipeline.store.dispatch(action)
-        pipeline.store.dispatch(resetAction)
-        expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual([])
+        const pipeline = wholePipeline({}, libConfig)
+        const resetAction = resetActionCreator()
+
+        for (const action of actions) {
+
+          pipeline.store.dispatch(action)
+          pipeline.store.dispatch(resetAction)
+          expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual([])
+
+        }
       }
-
-    })
+    )
   )
-
 })
 
-test('remove returns cache without element', () => {
+test('Remove returns cache without element', () => {
 
   fc.assert(
-    fc.property(fc.array(fc.tuple(fc.fullUnicodeString(1, 15), fc.fullUnicodeString()), 1), (arr) => {
+    fc.property(
+      fc.array(
+        fc.record({
+          type: fc.fullUnicodeString(1, 15),
+          payload: fc.anything(),
+          meta: fc.record({
+            [REDUX_ACTION_RETRY]: fc.record({
+              id: fc.uuid()
+            })
+          })
+        }),
+        1,
+        15
+      ),
+      (actions) => {
 
-      const conf = {
-        cache: arr.reduce(
-          (acc, x) => ({ ...acc, [x[0]]: {} }),
-          {}
-        )
-      }
+        const libConfig = {
+          cache: actions.reduce(
+            (config, action) => ({
+              ...config,
+              [action.type]: {}
+            }),
+            {}
+          )
+        }
 
-      const pipeline = wholePipeline({}, conf)
+        const pipeline = wholePipeline({}, libConfig)
 
+        for (const action of actions) {
 
-      for (const iterator of arr) {
-
-        const action: CacheableAction = {
-          type: iterator[0],
-          payload: iterator[1],
-          meta: {
-            [REDUX_ACTION_RETRY]: {
-              id: uuid(),
-            }
+          const wrappedAction = {
+            action
           }
+
+          const removeAction = removeActionCreator(action)
+
+          const oldState = pipeline.store.getState();
+
+          pipeline.store.dispatch(action)
+          expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache))
+            .toEqual(wrappedAction)
+
+          pipeline.store.dispatch(removeAction)
+
+          expect(pipeline.store.getState()).toEqual(oldState)
+
         }
 
-        const wrappedAction = {
-          action
-        }
-
-        const removeAction = removeActionCreator(action)
-
-        const oldState = pipeline.store.getState();
-
-        pipeline.store.dispatch(action)
-        expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)).toEqual(wrappedAction)
-
-        pipeline.store.dispatch(removeAction)
-
-        expect(pipeline.store.getState()).toEqual(oldState)
+        expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)
+          .toEqual([])
 
       }
-
-      expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual([])
-
-    })
+    )
   )
-
 })
 
-test('retry all', () => {
+test('Retry all', () => {
 
   fc.assert(
-    fc.property(fc.set(fc.fullUnicodeString(1, 15)), (arr) => {
+    fc.property(
+      fc.array(
+        fc.record({
+          type: fc.fullUnicodeString(1, 15),
+          payload: fc.anything(),
+          meta: fc.record({
+            [REDUX_ACTION_RETRY]: fc.record({
+              id: fc.uuid(),
+            })
+          })
+        })
+      ),
+      actions => {
 
-      const conf = {
-        cache: arr.reduce(
-          (acc, x) => ({ ...acc, [x[0]]: {} }),
-          {}
-        )
-      }
-
-      const pipeline = wholePipeline({}, conf)
-
-      const actions = []
-      const wrappedActions = []
-      const calledWith = []
-
-      const retryAllAction = retryAllActionCreator()
-
-      for (const iterator of arr) {
-
-        const action: CacheableAction = {
-          type: iterator[0],
-          payload: Symbol('payload'),
-          meta: {
-            [REDUX_ACTION_RETRY]: {
-              id: uuid(),
-            }
-          }
+        const libConfig = {
+          cache: actions.reduce(
+            (config, action) => ({
+              ...config,
+              [action.type]: {}
+            }),
+            {}
+          )
         }
 
-        const wrappedAction = {
-          action
+        const pipeline = wholePipeline({}, libConfig)
+
+        for (const action of actions) {
+
+          pipeline.store.dispatch(action)
+
+          expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache))
+            .toEqual({ action: action })
+
+          const oldState = pipeline.store.getState();
+
+          pipeline.store.dispatch(retryAllActionCreator())
+
+          expect(pipeline.store.getState())
+            .toEqual(oldState)
+
         }
 
-        wrappedActions.push(wrappedAction)
+        expect(pipeline.gotToReducerSpy.mock.calls)
+          .toEqual(Actions2RetryAllPattern(actions))
 
-        actions.push(action)
-
-        calledWith.push(
-          [upsertActionCreator(action)],
-          [action],
-          [retryAllAction],
-          ...Actions2RetryAllDispatchPattern(actions)
-        )
-
-        pipeline.store.dispatch(action)
-
-        expect(last(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)).toEqual(wrappedAction)
-
-        const oldState = pipeline.store.getState();
-        pipeline.store.dispatch(retryAllAction)
-
-        expect(pipeline.store.getState()).toEqual(oldState)
+        expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache)
+          .toEqual(actions.map(action => ({ action: action })))
 
       }
-
-      expect(pipeline.gotToReducerSpy.mock.calls).toEqual(calledWith)
-
-      expect(pipeline.store.getState()[REDUX_ACTION_RETRY].cache).toEqual(wrappedActions)
-
-    })
+    )
   )
-
 })

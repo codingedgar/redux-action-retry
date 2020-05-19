@@ -14,7 +14,7 @@ import {
 
 import { now } from "../src/now";
 
-import { wholePipeline } from "./utils/tearUp";
+import { wholePipeline } from "./utils/wholePipeline";
 
 import * as fc from 'fast-check';
 

@@ -1,8 +1,187 @@
+<link href="https://fonts.googleapis.com/css?family=Lato|Open+Sans&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Open Sans', sans-serif;
+    font-family: 'Lato', sans-serif;
+  }
+</style>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
 <script type="text/javascript">
   google.charts.load('current', { 'packages': ['timeline'] });
-  google.charts.setOnLoadCallback(drawChart);
-  function drawChart() {
+  google.charts.setOnLoadCallback(() => {
+    drawNormalCase();
+    drawNormalLibraries();
+    drawReduxActionRetry();
+    drawCooldownCase();
+    drawCooldown();
+    drawCancelCooldown();
+  });
+
+  var colors = {
+    // dispatch: 'blue',
+    // library: '#6200ee',
+    // flying: 'gray',
+    // error: '#db4437',
+    dispatch: '#9b51b4',
+    library: '#7e0080',
+    flying: 'df6fa0',
+    error: '#c20232',
+    success: '#008dd5'
+  };
+
+  const options = {
+    timeline: {
+      showRowLabels: true,
+      colorByRowLabel: false,
+    },
+    hAxis: {
+      format: 'mm:ss',
+      maxValue: new Date(2019, 7, 30, 0, 1, 30),
+    }
+  }
+
+  const row = {
+    network: {
+      default: [
+        ['Network', 'Offline', colors.error, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
+        ['Network', 'Wi-Fi', colors.success, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 1, 30)],
+      ]
+    },
+    server: {
+      default: [
+        ['Server', 'Uptime', colors.success, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 35)],
+        ['Server', 'Downtime', colors.error, new Date(2019, 7, 30, 0, 0, 35), new Date(2019, 7, 30, 0, 0, 55)],
+        ['Server', 'Uptime', colors.success, new Date(2019, 7, 30, 0, 0, 55), new Date(2019, 7, 30, 0, 1, 30)],
+      ]
+    },
+    dispatch: {
+      firstAction: ['Dispatch', 'Action', colors.dispatch, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 0)],
+      secondAction: ['Dispatch', 'Action', colors.dispatch, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 30)],
+      retry: ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 30)],
+    },
+    action: {
+      firstFlyingAction: ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 20)],
+      secondFlyingAction: ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 50)],
+
+      ActionNetworkError: ['Action', 'Network Error', colors.error, new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 20)],
+      ActionStatusError: ['Action', 'Status 500', colors.error, new Date(2019, 7, 30, 0, 0, 50), new Date(2019, 7, 30, 0, 0, 50)],
+    },
+    dangerZone: {
+      firstActionLost: ['Danger Zone', 'Action lost', '#db4437', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 20)],
+      secondActionLost: ['Danger Zone', 'Action lost', '#db4437', new Date(2019, 7, 30, 0, 0, 50), new Date(2019, 7, 30, 0, 0, 50)],
+    }
+
+  }
+
+  function drawNormalCase() {
+    var container = document.getElementById('normal_case');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Label' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([
+
+      ...row.network.default,
+
+      ...row.server.default,
+
+      row.dispatch.firstAction,
+      row.dispatch.secondAction,
+
+      row.action.firstFlyingAction,
+      row.action.secondFlyingAction,
+      row.action.ActionNetworkError,
+      row.action.ActionStatusError,
+
+      row.dangerZone.firstActionLost,
+      row.dangerZone.secondActionLost,
+    ]);
+
+    chart.draw(dataTable, options);
+  }
+
+  function drawNormalLibraries() {
+    var container = document.getElementById('normal_libraries');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Label' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([
+
+      ...row.network.default,
+
+
+      ...row.server.default,
+
+      row.dispatch.firstAction,
+
+      ['Library', 'Enqueue', '#6200ee', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 0)],
+      ['Library', 'Detects internet: retries & dequeue', '#6200ee', new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 30)],
+
+      ['Action', 'Not executed for lack of internet', colors.success, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 0)],
+
+      row.action.secondFlyingAction,
+      row.action.ActionStatusError,
+
+      row.dangerZone.secondActionLost,
+
+    ]);
+
+    chart.draw(dataTable, options);
+  }
+
+  function drawReduxActionRetry() {
+    var container = document.getElementById('rar');
+    var chart = new google.visualization.Timeline(container);
+    var dataTable = new google.visualization.DataTable();
+
+    dataTable.addColumn({ type: 'string', id: 'Label' });
+    dataTable.addColumn({ type: 'string', id: 'Name' });
+    dataTable.addColumn({ type: 'string', id: 'style', role: 'style' });
+    dataTable.addColumn({ type: 'date', id: 'Start' });
+    dataTable.addColumn({ type: 'date', id: 'End' });
+    dataTable.addRows([
+
+      // ['Network', 'Offline', '#db4437', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 25)],
+
+      // ['Server', 'Downtime', '#db4437', new Date(2019, 7, 30, 0, 0, 35), new Date(2019, 7, 30, 0, 0, 55)],
+      ...row.network.default,
+      ...row.server.default,
+
+      ['Dispatch', 'Action', colors.dispatch, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 0)],
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 1, 0), new Date(2019, 7, 30, 0, 1, 0)],
+      ['Dispatch', 'Remove', colors.dispatch, new Date(2019, 7, 30, 0, 1, 20), new Date(2019, 7, 30, 0, 1, 20)],
+
+      ['Library', 'Catch action', colors.library, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 0)],
+      ['Library', 'Retries action', colors.library, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Library', 'Retries action', colors.library, new Date(2019, 7, 30, 0, 1, 0), new Date(2019, 7, 30, 0, 1, 0)],
+      ['Library', 'Removes action from buffer', colors.library, new Date(2019, 7, 30, 0, 1, 20), new Date(2019, 7, 30, 0, 1, 20)],
+
+      row.action.firstFlyingAction,
+      row.action.ActionNetworkError,
+
+      row.action.secondFlyingAction,
+      row.action.ActionStatusError,
+
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 1, 0), new Date(2019, 7, 30, 0, 1, 20)],
+      ['Action', 'Success', colors.success, new Date(2019, 7, 30, 0, 1, 20), new Date(2019, 7, 30, 0, 1, 20)],
+
+    ]);
+
+    chart.draw(dataTable, options);
+  }
+
+  function drawCooldownCase() {
     var container = document.getElementById('timeline');
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.DataTable();
@@ -13,26 +192,19 @@
     dataTable.addColumn({ type: 'date', id: 'Start' });
     dataTable.addColumn({ type: 'date', id: 'End' });
     dataTable.addRows([
-      ['1min', '1min', '#f2f2f2', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 1, 0),],
-      ['Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
-      ['Retried Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 50)],
-      ['Danger Zone', 'Overlapping', '#db4437', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 30)],
-      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 21)],
+
+      row.dispatch.firstAction,
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 20)],
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 50)],
+      ['Danger Zone', 'Overlapping', colors.error, new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 30)],
+
     ]);
 
-    chart.draw(dataTable, {
-      timeline: {
-        showRowLabels: true,
-        colorByRowLabel: false,
-      }
-    });
+    chart.draw(dataTable, options);
   }
-</script>
 
-<script type="text/javascript">
-  google.charts.load('current', { 'packages': ['timeline'] });
-  google.charts.setOnLoadCallback(drawChart);
-  function drawChart() {
+  function drawCooldown() {
     var container = document.getElementById('timeline2');
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.DataTable();
@@ -43,27 +215,22 @@
     dataTable.addColumn({ type: 'date', id: 'Start' });
     dataTable.addColumn({ type: 'date', id: 'End' });
     dataTable.addRows([
-      ['1min', '1min', '#f2f2f2', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 1, 0)],
-      ['Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
-      ['Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 31)],
-      ['Retried Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 1, 3)],
-      ['Retried Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 1, 4)],
-      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 21)],
-      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 0, 34)],
+
+      row.dispatch.firstAction,
+
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 20)],
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 0, 33)],
+
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Action', 'Cooldown', colors.success, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 31)],
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 1, 3)],
+      ['Action', 'Cooldown', colors.success, new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 1, 4)],
     ]);
 
-    chart.draw(dataTable, {
-      timeline: {
-        showRowLabels: true,
-      }
-    });
+    chart.draw(dataTable, options);
   }
-</script>
 
-<script type="text/javascript">
-  google.charts.load('current', { 'packages': ['timeline'] });
-  google.charts.setOnLoadCallback(drawChart);
-  function drawChart() {
+  function drawCancelCooldown() {
     var container = document.getElementById('timeline3');
     var chart = new google.visualization.Timeline(container);
     var dataTable = new google.visualization.DataTable();
@@ -74,24 +241,45 @@
     dataTable.addColumn({ type: 'date', id: 'Start' });
     dataTable.addColumn({ type: 'date', id: 'End' });
     dataTable.addRows([
-      ['1min', '1min', '#f2f2f2', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 1, 0)],
-      ['Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 10)],
-      ['Retried Action', 'Flying', '#f4b400', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 50)],
-      ['Commands', 'Cancel Cooldown', '#6bd5ff', new Date(2019, 7, 30, 0, 0, 10), new Date(2019, 7, 30, 0, 0, 11)],
-      ['Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 10)],
-      ['Retried Action', 'Cooldown', '#4285f4', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 51)],
-      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 20), new Date(2019, 7, 30, 0, 0, 21)],
-      ['Commands', 'Retry', '#0f9d58', new Date(2019, 7, 30, 0, 0, 33), new Date(2019, 7, 30, 0, 0, 34)],
+
+      row.dispatch.firstAction,
+      row.dispatch.retry,
+
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 10), new Date(2019, 7, 30, 0, 0, 10)],
+      ['Dispatch', 'Cancel', colors.dispatch, new Date(2019, 7, 30, 0, 0, 40), new Date(2019, 7, 30, 0, 0, 40)],
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 45), new Date(2019, 7, 30, 0, 0, 45)],
+      ['Dispatch', 'Retry', colors.dispatch, new Date(2019, 7, 30, 0, 0, 55), new Date(2019, 7, 30, 0, 0, 55)],
+
+      row.action.firstFlyingAction,
+      // ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 30)],
+      ['Action', 'Cooldown', colors.success, new Date(2019, 7, 30, 0, 0, 0), new Date(2019, 7, 30, 0, 0, 21)],
+
+      // row.action.secondFlyingAction,
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 40)],
+      ['Action', 'Cooldown', colors.success, new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 40)],
+      ['Action', 'Expected Cooldown', 'gray', new Date(2019, 7, 30, 0, 0, 30), new Date(2019, 7, 30, 0, 0, 51)],
+
+      ['Action', 'Flying', colors.flying, new Date(2019, 7, 30, 0, 0, 45), new Date(2019, 7, 30, 0, 1, 5)],
+      ['Action', 'Cooldown', colors.success, new Date(2019, 7, 30, 0, 0, 45), new Date(2019, 7, 30, 0, 1, 6)],
+
     ]);
 
-    chart.draw(dataTable, {
-      timeline: {
-        showRowLabels: true,
-      }
-    });
+    chart.draw(dataTable, options);
   }
 </script>
 
+<h1>Normal Case</h1>
+<div id="normal_case" style="height: 400px;"></div>
+<h1>Libraries</h1>
+<h4>At most once delivery with network availability optimizations</h4>
+<div id="normal_libraries" style="height: 400px;"></div>
+<h1>Redux Action Retry</h1>
+<h4>At least once delivery</h4>
+<div id="rar" style="height: 400px;"></div>
+<h1>Cooldown</h1>
+<h4>Case</h4>
 <div id="timeline" style="height: 400px;"></div>
+<h4>Cooldown</h4>
 <div id="timeline2" style="height: 400px;"></div>
+<h4>cancel cooldown</h4>
 <div id="timeline3" style="height: 400px;"></div>

@@ -1,21 +1,26 @@
 import {
-  createRetryMechanism,
-} from "../../src/core/createRetryMechanism";
-import {
-  Config,
-} from "../../src/core/types";
-
-
-import {
   createStore,
   combineReducers,
   applyMiddleware,
 } from 'redux';
+import {
+  createRetryMechanism,
+  Config,
+} from "../../src";
 
-export function wholePipeline<T,U>(preloadState: any, config: Partial<Config<T,U>>) {
+export function wholePipeline<T, U>(
+  preloadState: any,
+  config: Partial<Config<T, U>>
+) {
 
   const gotToReducerSpy = jest.fn();
-  const { reducer, reduxActionRetryMiddlewares, stateKeyName } = createRetryMechanism<T,U>(config)
+
+  const {
+    reducer,
+    reduxActionRetryMiddlewares,
+    stateKeyName
+  } = createRetryMechanism<T, U>(config)
+
   const store = createStore(
     combineReducers({
       [stateKeyName]: reducer

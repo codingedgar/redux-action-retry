@@ -8,11 +8,11 @@ import {
 } from "../src/core/types";
 import {
   times,
-  timesConfg,
+  timesConfig,
   timesWrapAction
 } from "../src/times";
 
-import { wholePipeline } from "./utils/tearUp";
+import { wholePipeline } from "./utils/wholePipeline";
 
 import uuid from 'uuid/v4'
 import { Actions2RetryAllDispatchPattern } from './utils/fns';
@@ -27,7 +27,7 @@ test('actions are removed from cach after time to live', () => {
       actionAndCacheGen
       , ({ actions, cache }) => {
 
-        const conf: Partial<Config<timesConfg, timesWrapAction>> = {
+        const conf: Partial<Config<timesConfig, timesWrapAction>> = {
           cache,
           extensions: [
             times
@@ -77,7 +77,7 @@ const actionAndCacheGen = fc
   )
   .chain(types => {
 
-    const cache: cacheConfig<timesConfg> = types.reduce<cacheConfig<timesConfg>>(
+    const cache: cacheConfig<timesConfig> = types.reduce<cacheConfig<timesConfig>>(
       (acc, type) => ({
         ...acc,
         [type]: {

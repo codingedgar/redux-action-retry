@@ -7,7 +7,7 @@ import {
 } from "../src/cooldown";
 import * as cooldownNow from "../src/now";
 
-import { wholePipeline } from "./utils/tearUp";
+import { wholePipeline } from "./utils/wholePipeline";
 
 import * as fc from 'fast-check';
 
