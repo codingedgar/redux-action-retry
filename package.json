@@ -42,7 +42,7 @@
     "redux": "4.0.4"
   },
   "dependencies": {
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "ramda": "0.26.1"
   }
 }
